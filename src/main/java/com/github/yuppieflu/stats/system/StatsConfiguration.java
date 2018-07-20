@@ -1,6 +1,6 @@
 package com.github.yuppieflu.stats.system;
 
-import com.github.yuppieflu.stats.service.RingBufferStorageService;
+import com.github.yuppieflu.stats.service.bucket.BucketsStorageService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +10,7 @@ import java.time.Clock;
 public class StatsConfiguration {
 
     @Bean
-    public RingBufferStorageService storageService() {
-        return new RingBufferStorageService(Clock.systemUTC());
+    public BucketsStorageService storageService() {
+        return new BucketsStorageService(Clock.systemUTC());
     }
 }
