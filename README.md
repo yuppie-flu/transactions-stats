@@ -22,9 +22,9 @@ A method for counting statistics use only buckets with fresh data
 (`lastAddedTimestamp` <= 60 seconds).
 
 This implementation guaranties O(1) memory usage cause the array size is fixed.
-Time performance of '/transactions' method is O(1), cause the solution uses only one
-`ArrayList.get(index)` call.
-Performance of `/statistics` is also O(1), cause it requires a loop the constant size array.
+Time performance of `/transactions` method is O(1), cause the solution uses only one
+`ArrayList.get(index)` call. Performance of `/statistics` is also O(1), cause it 
+requires a loop through the constant size array.
 
 There are some unclear things in the task description. I found that only at
 Saturday, so I was not able to clarify this and made decisions myself.
