@@ -29,7 +29,7 @@ class StatBucketAccumulator {
                         .max(this.max)
                         .min(this.min)
                         .sum(this.sum)
-                        .avg(this.sum / this.count)
+                        .avg(this.count == 0 ? 0.0 : this.sum / this.count)
                         .build();
     }
 }

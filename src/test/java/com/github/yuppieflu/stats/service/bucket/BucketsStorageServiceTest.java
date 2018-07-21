@@ -38,6 +38,23 @@ public class BucketsStorageServiceTest {
     }
 
     @Test
+    public void tooOldMeasurementsAreIgnored() {
+        // setup
+        Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli() - 1, 1.0);
+        storageService.addMeasurement(m);
+
+        // when
+        Statistic statistic = storageService.getStatistic();
+
+        // then
+        assertThat(statistic.getCount()).isEqualTo(0);
+        assertThat(statistic.getMax()).isEqualTo(0.0);
+        assertThat(statistic.getMin()).isEqualTo(0.0);
+        assertThat(statistic.getSum()).isEqualTo(0.0);
+        assertThat(statistic.getAvg()).isEqualTo(0.0);
+    }
+
+    @Test
     public void processedStatusForTransactionWithinMinute() {
         // setup
         Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli(), 1.0);
