@@ -34,7 +34,7 @@ public class IntegrationTest {
     TestRestTemplate testRestTemplate;
 
     @Test
-    public void addSeveralTransactionsTest() throws Exception {
+    public void addSeveralTransactionsTest() {
         // setup
         List<Transaction> transactionList = Stream.generate(this::createTransaction)
                                                   .limit(TRANSACTIONS_COUNT)
