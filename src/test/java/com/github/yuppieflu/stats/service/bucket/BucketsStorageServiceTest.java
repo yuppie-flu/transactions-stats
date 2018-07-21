@@ -47,11 +47,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        assertThat(statistic.getCount()).isEqualTo(0);
-        assertThat(statistic.getMax()).isEqualTo(0.0);
-        assertThat(statistic.getMin()).isEqualTo(0.0);
-        assertThat(statistic.getSum()).isEqualTo(0.0);
-        assertThat(statistic.getAvg()).isEqualTo(0.0);
+        assertThat(statistic).isEqualTo(empty());
     }
 
     @Test
@@ -78,11 +74,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        assertThat(statistic.getCount()).isEqualTo(expectedStats.getCount());
-        assertThat(statistic.getMax()).isEqualTo(expectedStats.getMax());
-        assertThat(statistic.getMin()).isEqualTo(expectedStats.getMin());
-        assertThat(statistic.getSum()).isEqualTo(expectedStats.getSum());
-        assertThat(statistic.getAvg()).isEqualTo(expectedStats.getAverage());
+        assertThat(statistic).isEqualTo(from(expectedStats));
     }
 
     @Test
@@ -97,11 +89,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        assertThat(statistic.getCount()).isEqualTo(expectedStats.getCount());
-        assertThat(statistic.getMax()).isEqualTo(expectedStats.getMax());
-        assertThat(statistic.getMin()).isEqualTo(expectedStats.getMin());
-        assertThat(statistic.getSum()).isEqualTo(expectedStats.getSum());
-        assertThat(statistic.getAvg()).isEqualTo(expectedStats.getAverage());
+        assertThat(statistic).isEqualTo(from(expectedStats));
     }
 
     private Measurement getRandMeasurement() {
@@ -111,5 +99,25 @@ public class BucketsStorageServiceTest {
     private Measurement getRandMeasurementSecondsAgo(int seconds) {
         long timestamp = FIXED_TS_SECONDS.minusSeconds(seconds).toEpochMilli() + ThreadLocalRandom.current().nextLong(1000);
         return new Measurement(timestamp, ThreadLocalRandom.current().nextDouble(10.0));
+    }
+
+    private static Statistic from(DoubleSummaryStatistics s) {
+        return Statistic.builder()
+                        .count(s.getCount())
+                        .max(s.getMax())
+                        .min(s.getMin())
+                        .sum(s.getSum())
+                        .avg(s.getAverage())
+                        .build();
+    }
+
+    private static Statistic empty() {
+         return Statistic.builder()
+                        .count(0)
+                        .max(0.0)
+                        .min(0.0)
+                        .sum(0.0)
+                        .avg(0.0)
+                        .build();
     }
 }
