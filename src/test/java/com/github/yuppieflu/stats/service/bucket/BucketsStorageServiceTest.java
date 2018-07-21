@@ -4,6 +4,7 @@ import com.github.yuppieflu.stats.service.StorageService;
 import com.github.yuppieflu.stats.service.domain.Measurement;
 import com.github.yuppieflu.stats.service.domain.Statistic;
 import com.github.yuppieflu.stats.service.domain.Status;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Clock;
@@ -11,7 +12,8 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.DoubleSummaryStatistics;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,9 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BucketsStorageServiceTest {
 
     private static final Instant FIXED_TS = Instant.now();
-    private static final Instant FIXED_TS_SECONDS = FIXED_TS.truncatedTo(ChronoUnit.SECONDS);
 
-    private StorageService storageService = new BucketsStorageService(Clock.fixed(FIXED_TS, ZoneOffset.UTC));
+    private StorageService storageService;
+
+    @Before
+    public void setup() {
+        storageService = new BucketsStorageService(Clock.fixed(FIXED_TS, ZoneOffset.UTC));
+    }
 
     @Test
     public void rejectedStatusForTooOldTransaction() {
@@ -96,9 +102,8 @@ public class BucketsStorageServiceTest {
         return getRandMeasurementSecondsAgo(5);
     }
 
-    private Measurement getRandMeasurementSecondsAgo(int seconds) {
-        long timestamp = FIXED_TS_SECONDS.minusSeconds(seconds).toEpochMilli() + ThreadLocalRandom.current().nextLong(1000);
-        return new Measurement(timestamp, ThreadLocalRandom.current().nextDouble(10.0));
+    private Measurement getRandMeasurementSecondsAgo(int secondsAgo) {
+        return MeasurementBuilder.getRandNotOldMeasurementFromBucket(FIXED_TS, secondsAgo);
     }
 
     private static Statistic from(DoubleSummaryStatistics s) {

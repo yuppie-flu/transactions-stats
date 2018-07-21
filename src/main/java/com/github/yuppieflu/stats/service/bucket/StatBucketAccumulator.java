@@ -2,8 +2,10 @@ package com.github.yuppieflu.stats.service.bucket;
 
 import com.github.yuppieflu.stats.service.domain.Statistic;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 @Builder
+@EqualsAndHashCode
 class StatBucketAccumulator {
 
     public static final StatBucketAccumulator EMPTY =
