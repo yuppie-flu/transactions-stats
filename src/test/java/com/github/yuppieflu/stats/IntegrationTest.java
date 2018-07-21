@@ -2,6 +2,7 @@ package com.github.yuppieflu.stats;
 
 import com.github.yuppieflu.stats.rest.dto.Statistic;
 import com.github.yuppieflu.stats.rest.dto.Transaction;
+import com.github.yuppieflu.stats.util.StatAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.summarizingDouble;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
 @RunWith(SpringRunner.class)
@@ -48,7 +48,7 @@ public class IntegrationTest {
         Statistic stat = testRestTemplate.getForObject("/statistics", Statistic.class);
 
         // then
-        assertAlmostEqual(stat, expectedStat);
+        StatAssert.assertThat(stat).isCloseTo(expectedStat, offset(0.01));
     }
 
     private void postTransactionWithDelay(Transaction transaction) {
@@ -64,13 +64,5 @@ public class IntegrationTest {
         double randomAmount = ThreadLocalRandom.current().nextDouble(MAX_TRANSACTION_AMOUNT);
         double amount = BigDecimal.valueOf(randomAmount).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
         return new Transaction(System.currentTimeMillis(), amount);
-    }
-
-    private static void assertAlmostEqual(Statistic stat, DoubleSummaryStatistics expectedStat) {
-        assertThat(stat.getCount()).isEqualTo(expectedStat.getCount());
-        assertThat(stat.getMax()).isEqualTo(expectedStat.getMax());
-        assertThat(stat.getMin()).isEqualTo(expectedStat.getMin());
-        assertThat(stat.getSum()).isCloseTo(expectedStat.getSum(), offset(0.01));
-        assertThat(stat.getAvg()).isCloseTo(expectedStat.getAverage(), offset(0.01));
     }
 }

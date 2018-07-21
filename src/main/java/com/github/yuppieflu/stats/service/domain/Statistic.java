@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Statistic {
+public class Statistic implements Stat {
     private final double sum;
     private final double avg;
     private final double min;

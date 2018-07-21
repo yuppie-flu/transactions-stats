@@ -2,17 +2,21 @@ package com.github.yuppieflu.stats.service.bucket;
 
 import com.github.yuppieflu.stats.service.domain.Measurement;
 import com.github.yuppieflu.stats.service.domain.Statistic;
+import com.github.yuppieflu.stats.util.StatAssert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.summarizingDouble;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 public class StatBucketTest {
 
@@ -45,7 +49,7 @@ public class StatBucketTest {
         Statistic statistic = bucket.toAccumulator().toStatistic();
 
         // then
-        assertThat(statistic.getCount()).isEqualTo(expectedStats.getCount());
+        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     private void addMeasurementWithLatch(Measurement m, CountDownLatch latch) {

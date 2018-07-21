@@ -4,6 +4,7 @@ import com.github.yuppieflu.stats.service.StorageService;
 import com.github.yuppieflu.stats.service.domain.Measurement;
 import com.github.yuppieflu.stats.service.domain.Statistic;
 import com.github.yuppieflu.stats.service.domain.Status;
+import com.github.yuppieflu.stats.util.StatAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 
 import static com.github.yuppieflu.stats.service.bucket.BucketsStorageServiceTestUtils.empty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 public class BucketsStorageServiceTest {
 
@@ -88,7 +90,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        assertThat(statistic).isEqualTo(from(expectedStats));
+        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     @Test
@@ -103,7 +105,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        assertThat(statistic).isEqualTo(from(expectedStats));
+        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     private Measurement getRandMeasurement() {
@@ -112,15 +114,5 @@ public class BucketsStorageServiceTest {
 
     private Measurement getRandMeasurementSecondsAgo(int secondsAgo) {
         return BucketsStorageServiceTestUtils.getRandNotOldMeasurementFromBucket(FIXED_TS, secondsAgo);
-    }
-
-    private static Statistic from(DoubleSummaryStatistics s) {
-        return Statistic.builder()
-                        .count(s.getCount())
-                        .max(s.getMax())
-                        .min(s.getMin())
-                        .sum(s.getSum())
-                        .avg(s.getAverage())
-                        .build();
     }
 }
