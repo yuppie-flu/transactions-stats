@@ -6,11 +6,20 @@
 * [Spring Boot 2.0](https://spring.io/projects/spring-boot)
 * [Lombok](https://projectlombok.org/)
 * [Maven](https://maven.apache.org/)
+* [Locust](https://locust.io/)
 
 To run all tests:
 ```
 mvn clean test
 ```
+
+To run simple load test with help of [Locust](https://locust.io/)
+1. Start the service locally
+2. Run locust web console
+   ```
+   locust -f src/test/locust/load-test.py -H http://127.0.0.1:8080 
+   ```
+3. Open [Locust local console](http://127.0.0.1:8089) and start a simulation
 
 ### Implementation details
 
