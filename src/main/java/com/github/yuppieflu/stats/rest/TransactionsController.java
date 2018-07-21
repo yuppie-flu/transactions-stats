@@ -6,7 +6,6 @@ import com.github.yuppieflu.stats.service.StorageService;
 import com.github.yuppieflu.stats.service.domain.Measurement;
 import com.github.yuppieflu.stats.service.domain.Status;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
