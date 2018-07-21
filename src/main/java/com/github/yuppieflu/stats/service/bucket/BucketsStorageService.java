@@ -48,9 +48,9 @@ public class BucketsStorageService implements StorageService {
         final long requestTimestamp = clock.millis();
         return buckets.stream()
                       .filter(bucket -> !bucket.shouldSkip(requestTimestamp))
-                      .map(StatBucket::toAccumulator)
-                      .reduce(StatBucketAccumulator::add)
-                      .orElse(StatBucketAccumulator.EMPTY)
+                      .map(StatBucket::content)
+                      .reduce(StatBucketContent::add)
+                      .orElse(StatBucketContent.EMPTY)
                       .toStatistic();
     }
 }

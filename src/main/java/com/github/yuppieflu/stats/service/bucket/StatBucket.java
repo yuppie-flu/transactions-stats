@@ -56,15 +56,15 @@ class StatBucket {
         }
     }
 
-    StatBucketAccumulator toAccumulator() {
+    StatBucketContent content() {
         readWriteLock.readLock().lock();
         try {
-            return StatBucketAccumulator.builder()
-                                        .count(this.count)
-                                        .max(this.max)
-                                        .min(this.min)
-                                        .sum(this.sum)
-                                        .build();
+            return StatBucketContent.builder()
+                                    .count(this.count)
+                                    .max(this.max)
+                                    .min(this.min)
+                                    .sum(this.sum)
+                                    .build();
         } finally {
             readWriteLock.readLock().unlock();
         }

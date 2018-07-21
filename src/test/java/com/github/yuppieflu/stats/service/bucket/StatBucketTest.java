@@ -46,7 +46,7 @@ public class StatBucketTest {
         results.forEach(CompletableFuture::join);
 
         // when
-        Statistic statistic = bucket.toAccumulator().toStatistic();
+        Statistic statistic = bucket.content().toStatistic();
 
         // then
         StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
