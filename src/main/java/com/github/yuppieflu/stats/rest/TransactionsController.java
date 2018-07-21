@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 public class TransactionsController {
 
@@ -23,7 +22,6 @@ public class TransactionsController {
 
     @PostMapping("/transactions")
     public ResponseEntity<Void> transactions(@RequestBody Transaction transaction) {
-        log.info("Received transaction: {}", transaction);
         Status status = storageService.addMeasurement(new Measurement(transaction));
         switch (status) {
             case REJECTED: return ResponseEntity.noContent().build();
@@ -34,12 +32,6 @@ public class TransactionsController {
 
     @GetMapping("/statistics")
     public Statistic statistics() {
-        return Statistic.builder()
-                        .sum(0.0)
-                        .avg(0.0)
-                        .max(0.0)
-                        .min(0.0)
-                        .count(0L)
-                        .build();
+        return Statistic.from(storageService.getStatistic());
     }
 }

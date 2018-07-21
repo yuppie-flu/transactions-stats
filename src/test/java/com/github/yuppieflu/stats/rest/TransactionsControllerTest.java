@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yuppieflu.stats.rest.dto.Transaction;
 import com.github.yuppieflu.stats.service.StorageService;
 import com.github.yuppieflu.stats.service.domain.Measurement;
+import com.github.yuppieflu.stats.service.domain.Statistic;
 import com.github.yuppieflu.stats.service.domain.Status;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +36,6 @@ public class TransactionsControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-
     @Test
     public void noContentStatusForRejectedTransactions() throws Exception {
         // setup
@@ -64,5 +64,25 @@ public class TransactionsControllerTest {
         // then
                .andExpect(status().isCreated())
                .andExpect(content().bytes(EMPTY_BODY));
+    }
+
+    @Test
+    public void statisticsEndpoint() throws Exception {
+        // setup
+        Statistic stat = Statistic.builder()
+                               .count(3)
+                               .max(10.237)
+                               .min(3.73)
+                               .sum(30.318)
+                               .avg(10.106)
+                               .build();
+        when(storageService.getStatistic()).thenReturn(stat);
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.get("/statistics"))
+
+        // then
+               .andExpect(status().isOk())
+               .andExpect(content().json(mapper.writeValueAsString(stat)));
     }
 }

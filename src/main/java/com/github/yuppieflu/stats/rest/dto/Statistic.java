@@ -11,4 +11,14 @@ public class Statistic {
     private final double max;
     private final double min;
     private final long count;
+
+    public static Statistic from(com.github.yuppieflu.stats.service.domain.Statistic statistic) {
+        return Statistic.builder()
+                        .count(statistic.getCount())
+                        .max(statistic.getMax())
+                        .min(statistic.getMin())
+                        .avg(statistic.getAvg())
+                        .sum(statistic.getSum())
+                        .build();
+    }
 }
