@@ -5,8 +5,6 @@ import com.github.yuppieflu.stats.service.domain.Statistic;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.concurrent.*;
@@ -22,13 +20,13 @@ public class StatBucketTest {
 
     @Before
     public void setup() {
-        bucket = new StatBucket();
+        bucket = new StatBucket(0);
     }
 
     @Test
     public void testConcurrentAddMeasurements() {
         // setup
-        List<Measurement> measurements = Stream.generate(MeasurementBuilder::getRandMeasurementFromOneBucket)
+        List<Measurement> measurements = Stream.generate(BucketsStorageServiceTestUtils::getRandMeasurementFromOneBucket)
                                                .limit(10000)
                                                .collect(Collectors.toList());
         DoubleSummaryStatistics expectedStats = measurements.stream()

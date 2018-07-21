@@ -7,17 +7,13 @@ import com.github.yuppieflu.stats.service.domain.Status;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
+import java.time.*;
 import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.github.yuppieflu.stats.service.bucket.BucketsStorageServiceTestUtils.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BucketsStorageServiceTest {
@@ -103,7 +99,7 @@ public class BucketsStorageServiceTest {
     }
 
     private Measurement getRandMeasurementSecondsAgo(int secondsAgo) {
-        return MeasurementBuilder.getRandNotOldMeasurementFromBucket(FIXED_TS, secondsAgo);
+        return BucketsStorageServiceTestUtils.getRandNotOldMeasurementFromBucket(FIXED_TS, secondsAgo);
     }
 
     private static Statistic from(DoubleSummaryStatistics s) {
@@ -113,16 +109,6 @@ public class BucketsStorageServiceTest {
                         .min(s.getMin())
                         .sum(s.getSum())
                         .avg(s.getAverage())
-                        .build();
-    }
-
-    private static Statistic empty() {
-         return Statistic.builder()
-                        .count(0)
-                        .max(0.0)
-                        .min(0.0)
-                        .sum(0.0)
-                        .avg(0.0)
                         .build();
     }
 }

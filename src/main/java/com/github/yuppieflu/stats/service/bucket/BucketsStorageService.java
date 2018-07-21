@@ -6,14 +6,11 @@ import com.github.yuppieflu.stats.service.domain.Statistic;
 import com.github.yuppieflu.stats.service.domain.Status;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 public class BucketsStorageService implements StorageService {
 
@@ -26,9 +23,9 @@ public class BucketsStorageService implements StorageService {
 
     public BucketsStorageService(Clock clock) {
         this.clock = clock;
-        this.buckets = Stream.generate(StatBucket::new)
-                             .limit(ONE_BUCKET_MILLIS)
-                             .collect(Collectors.toCollection(ArrayList::new));
+        this.buckets = IntStream.range(0, 60)
+                                .mapToObj(StatBucket::new)
+                                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -38,8 +35,7 @@ public class BucketsStorageService implements StorageService {
         if (millisInPast > BUCKETS_SIZE_MILLIS) {
             return Status.REJECTED;
         }
-        int bucketIndex = LocalDateTime.ofEpochSecond(measurementTs / 1000, (int)(measurementTs % 1000) * 1000, ZoneOffset.UTC)
-                                       .get(ChronoField.SECOND_OF_MINUTE);
+        int bucketIndex = TimeUtils.secondOfMinute(measurementTs);
         buckets.get(bucketIndex).addMeasurement(m);
         return Status.PROCESSED;
     }

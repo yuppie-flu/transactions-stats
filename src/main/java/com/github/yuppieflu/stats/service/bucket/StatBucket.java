@@ -1,11 +1,15 @@
 package com.github.yuppieflu.stats.service.bucket;
 
 import com.github.yuppieflu.stats.service.domain.Measurement;
+import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@RequiredArgsConstructor
 class StatBucket {
+    private final int index;
+
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private long count;
     private double max;
@@ -16,6 +20,9 @@ class StatBucket {
     void addMeasurement(Measurement m) {
         readWriteLock.writeLock().lock();
         try {
+            if (lastAddedTimestamp - m.getTimestamp() > BucketsStorageService.ONE_BUCKET_MILLIS) {
+                return;
+            }
             if (m.getTimestamp() - lastAddedTimestamp > BucketsStorageService.ONE_BUCKET_MILLIS) {
                 count = 1;
                 max = m.getValue();
@@ -36,7 +43,14 @@ class StatBucket {
     boolean shouldSkip(long timestamp) {
         readWriteLock.readLock().lock();
         try {
-            return count == 0 || timestamp - lastAddedTimestamp > BucketsStorageService.BUCKETS_SIZE_MILLIS;
+            if (count == 0) {
+                return true;
+            }
+            int currentIndex = TimeUtils.secondOfMinute(timestamp);
+            if (currentIndex == index) {
+                return timestamp - lastAddedTimestamp > BucketsStorageService.ONE_BUCKET_MILLIS;
+            }
+            return timestamp - lastAddedTimestamp > BucketsStorageService.BUCKETS_SIZE_MILLIS;
         } finally {
             readWriteLock.readLock().unlock();
         }
