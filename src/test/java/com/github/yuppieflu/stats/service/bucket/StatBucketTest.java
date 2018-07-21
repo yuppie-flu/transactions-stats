@@ -23,8 +23,8 @@ public class StatBucketTest {
     private StatBucket bucket;
 
     @Before
-    public void setup() {
-        bucket = new StatBucket(0);
+    public void setup(){
+        bucket = new StatBucket();
     }
 
     @Test

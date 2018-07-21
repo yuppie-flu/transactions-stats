@@ -8,8 +8,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @RequiredArgsConstructor
 class StatBucket {
-    private final int index;
-
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
     private long count;
     private double max;
@@ -20,19 +18,10 @@ class StatBucket {
     void addMeasurement(Measurement m) {
         readWriteLock.writeLock().lock();
         try {
-            if (lastAddedTimestamp - m.getTimestamp() > BucketsStorageService.ONE_BUCKET_MILLIS) {
-                return;
-            }
-            if (m.getTimestamp() - lastAddedTimestamp > BucketsStorageService.ONE_BUCKET_MILLIS) {
-                count = 1;
-                max = m.getValue();
-                min = m.getValue();
-                sum = m.getValue();
+            if (lastAddedTimestamp < m.getTimestamp()) {
+                replaceOldData(m);
             } else {
-                count++;
-                max = Math.max(max, m.getValue());
-                min = Math.min(min, m.getValue());
-                sum += m.getValue();
+                add(m);
             }
             lastAddedTimestamp = m.getTimestamp();
         } finally {
@@ -40,17 +29,24 @@ class StatBucket {
         }
     }
 
-    boolean shouldSkip(long timestamp) {
+    private void replaceOldData(Measurement m) {
+        count = 1;
+        max = m.getValue();
+        min = m.getValue();
+        sum = m.getValue();
+    }
+
+    private void add(Measurement m) {
+        count++;
+        max = Math.max(max, m.getValue());
+        min = Math.min(min, m.getValue());
+        sum += m.getValue();
+    }
+
+    boolean isWithin60SecondsFrom(long timestamp) {
         readWriteLock.readLock().lock();
         try {
-            if (count == 0) {
-                return true;
-            }
-            int currentIndex = TimeUtils.secondOfMinute(timestamp);
-            if (currentIndex == index) {
-                return timestamp - lastAddedTimestamp > BucketsStorageService.ONE_BUCKET_MILLIS;
-            }
-            return timestamp - lastAddedTimestamp > BucketsStorageService.BUCKETS_SIZE_MILLIS;
+            return timestamp - this.lastAddedTimestamp <= BucketsStorageService.SIZE;
         } finally {
             readWriteLock.readLock().unlock();
         }

@@ -6,26 +6,26 @@ import com.github.yuppieflu.stats.service.domain.Statistic;
 import com.github.yuppieflu.stats.service.domain.Status;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class BucketsStorageService implements StorageService {
 
-    private static final int BUCKETS_SIZE_SEC = 60;
-    static final long BUCKETS_SIZE_MILLIS = TimeUnit.SECONDS.toMillis(BUCKETS_SIZE_SEC);
-    static final long ONE_BUCKET_MILLIS = TimeUnit.SECONDS.toMillis(1);
+    static final long SIZE = 60_000;
 
     private final Clock clock;
     private final List<StatBucket> buckets;
 
     public BucketsStorageService(Clock clock) {
         this.clock = clock;
-        this.buckets = IntStream.range(0, 60)
-                                .mapToObj(StatBucket::new)
-                                .collect(Collectors.toCollection(ArrayList::new));
+        this.buckets = Stream.generate(StatBucket::new)
+                             .limit(SIZE)
+                             .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -35,19 +35,26 @@ public class BucketsStorageService implements StorageService {
         if (millisInPast < 0) {
             return Status.INVALID;
         }
-        if (millisInPast > BUCKETS_SIZE_MILLIS) {
+        if (millisInPast > SIZE) {
             return Status.REJECTED;
         }
-        int bucketIndex = TimeUtils.secondOfMinute(measurementTs);
+        int bucketIndex = milliSecondOfMinute(measurementTs);
         buckets.get(bucketIndex).addMeasurement(m);
         return Status.PROCESSED;
+    }
+
+    static int milliSecondOfMinute(long epochMillis) {
+        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(
+                epochMillis / 1000, 0, ZoneOffset.UTC);
+        int millis = (int)(epochMillis % 1000);
+        return localDateTime.get(ChronoField.SECOND_OF_MINUTE) * 1000 + millis;
     }
 
     @Override
     public Statistic getStatistic() {
         final long requestTimestamp = clock.millis();
         return buckets.stream()
-                      .filter(bucket -> !bucket.shouldSkip(requestTimestamp))
+                      .filter(b -> b.isWithin60SecondsFrom(requestTimestamp))
                       .map(StatBucket::content)
                       .reduce(StatBucketContent::add)
                       .orElse(StatBucketContent.EMPTY)

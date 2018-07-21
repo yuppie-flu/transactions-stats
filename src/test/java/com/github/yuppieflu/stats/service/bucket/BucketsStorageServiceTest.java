@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.offset;
 
 public class BucketsStorageServiceTest {
 
+    private static final double VALUE = 1.0;
     private static final Instant FIXED_TS = Instant.now();
 
     private StorageService storageService;
@@ -30,9 +31,21 @@ public class BucketsStorageServiceTest {
     }
 
     @Test
+    public void testMillSecondsOfMinute() {
+        // setup
+        long epochMillis = LocalDateTime.parse("2007-12-03T10:15:49")
+                                        .toInstant(ZoneOffset.UTC)
+                                        .plusMillis(587)
+                                        .toEpochMilli();
+
+        // expect
+        assertThat(BucketsStorageService.milliSecondOfMinute(epochMillis)).isEqualTo(49587);
+    }
+
+    @Test
     public void invalidStatusForFutureTransaction() {
         // setup
-        Measurement m = new Measurement(FIXED_TS.plusMillis(1).toEpochMilli(), 1.0);
+        Measurement m = measurement(FIXED_TS.plusMillis(1), VALUE);
 
         // when
         Status status = storageService.addMeasurement(m);
@@ -44,7 +57,7 @@ public class BucketsStorageServiceTest {
     @Test
     public void rejectedStatusForTooOldTransaction() {
         // setup
-        Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli() - 1, 1.0);
+        Measurement m = measurement(FIXED_TS.minusSeconds(60).minusMillis(1), VALUE);
 
         // when
         Status status = storageService.addMeasurement(m);
@@ -56,7 +69,7 @@ public class BucketsStorageServiceTest {
     @Test
     public void tooOldMeasurementsAreIgnored() {
         // setup
-        Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli() - 1, 1.0);
+        Measurement m = measurement(FIXED_TS.minusSeconds(60).minusMillis(1), VALUE);
         storageService.addMeasurement(m);
 
         // when
@@ -69,7 +82,7 @@ public class BucketsStorageServiceTest {
     @Test
     public void processedStatusForTransactionWithinMinute() {
         // setup
-        Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli(), 1.0);
+        Measurement m = measurement(FIXED_TS.minusSeconds(60), VALUE);
 
         // when
         Status status = storageService.addMeasurement(m);
@@ -114,5 +127,9 @@ public class BucketsStorageServiceTest {
 
     private Measurement getRandMeasurementSecondsAgo(int secondsAgo) {
         return BucketsStorageServiceTestUtils.getRandNotOldMeasurementFromBucket(FIXED_TS, secondsAgo);
+    }
+
+    private static Measurement measurement(Instant instant, double value) {
+        return new Measurement(instant.toEpochMilli(), value);
     }
 }
