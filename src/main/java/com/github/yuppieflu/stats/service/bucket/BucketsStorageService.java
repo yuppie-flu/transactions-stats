@@ -32,6 +32,9 @@ public class BucketsStorageService implements StorageService {
     public Status addMeasurement(Measurement m) {
         long measurementTs = m.getTimestamp();
         long millisInPast = clock.millis() - measurementTs;
+        if (millisInPast < 0) {
+            return Status.INVALID;
+        }
         if (millisInPast > BUCKETS_SIZE_MILLIS) {
             return Status.REJECTED;
         }

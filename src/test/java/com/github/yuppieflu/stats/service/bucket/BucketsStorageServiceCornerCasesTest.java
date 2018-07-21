@@ -19,10 +19,8 @@ public class BucketsStorageServiceCornerCasesTest {
     private static final Instant HOUR_BEGINNING = LocalDateTime.now().toInstant(ZoneOffset.UTC)
                                                                .truncatedTo(ChronoUnit.HOURS);
 
-
     private ManagedClock clock = new ManagedClock(Clock.systemUTC());
     private StorageService storageService;
-
 
     @Before
     public void setup() {
@@ -65,7 +63,6 @@ public class BucketsStorageServiceCornerCasesTest {
         assertThat(statistic.getCount()).isEqualTo(1);
     }
 
-
     @Test
     public void valuesOlderThan60SecondsIgnored() {
         // setup
@@ -97,10 +94,8 @@ public class BucketsStorageServiceCornerCasesTest {
 
         moveClock(HOUR_BEGINNING.plusSeconds(30));
         storageService.addMeasurement(new Measurement(timeOldMeasurement.toEpochMilli(), 1.0));
-        moveClock(HOUR_BEGINNING);
+        moveClock(timeNow);
         storageService.addMeasurement(new Measurement(timeNewMeasurement.toEpochMilli(), 2.0));
-        // move clock
-        clock.setClock(Clock.fixed(timeNow, ZoneOffset.UTC));
 
         // when
         Statistic statistic = storageService.getStatistic();

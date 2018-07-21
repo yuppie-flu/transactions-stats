@@ -28,6 +28,18 @@ public class BucketsStorageServiceTest {
     }
 
     @Test
+    public void invalidStatusForFutureTransaction() {
+        // setup
+        Measurement m = new Measurement(FIXED_TS.plusMillis(1).toEpochMilli(), 1.0);
+
+        // when
+        Status status = storageService.addMeasurement(m);
+
+        // then
+        assertThat(status).isEqualTo(Status.INVALID);
+    }
+
+    @Test
     public void rejectedStatusForTooOldTransaction() {
         // setup
         Measurement m = new Measurement(FIXED_TS.minusSeconds(60).toEpochMilli() - 1, 1.0);

@@ -37,6 +37,20 @@ public class TransactionsControllerTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Test
+    public void badRequestStatusForFutureTransactions() throws Exception {
+        // setup
+        String body = mapper.writeValueAsString(TRANSACTION);
+        when(storageService.addMeasurement(any(Measurement.class))).thenReturn(Status.INVALID);
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+                                              .contentType(MediaType.APPLICATION_JSON)
+                                              .content(body))
+               // then
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void noContentStatusForRejectedTransactions() throws Exception {
         // setup
         String body = mapper.writeValueAsString(TRANSACTION);
