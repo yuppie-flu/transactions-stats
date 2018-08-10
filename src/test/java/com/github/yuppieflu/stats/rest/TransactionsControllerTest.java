@@ -83,13 +83,8 @@ public class TransactionsControllerTest {
     @Test
     public void statisticsEndpoint() throws Exception {
         // setup
-        Statistic stat = Statistic.builder()
-                               .count(3)
-                               .max(10.237)
-                               .min(3.73)
-                               .sum(30.318)
-                               .avg(10.106)
-                               .build();
+
+        Statistic stat = new Statistic(3, 3.73, 10.237, 30.318);
         when(storageService.getStatistic()).thenReturn(stat);
 
         // when

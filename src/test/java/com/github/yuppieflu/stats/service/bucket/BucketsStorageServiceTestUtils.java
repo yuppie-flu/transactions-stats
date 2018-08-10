@@ -22,12 +22,6 @@ class BucketsStorageServiceTestUtils {
     }
 
     static Statistic empty() {
-        return Statistic.builder()
-                        .count(0)
-                        .max(0.0)
-                        .min(0.0)
-                        .sum(0.0)
-                        .avg(0.0)
-                        .build();
+        return new Statistic(0, 0.0, 0.0, 0.0);
     }
 }

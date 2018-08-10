@@ -38,6 +38,6 @@ public class TransactionsController {
 
     @GetMapping("/statistics")
     public Statistic statistics() {
-        return Statistic.from(storageService.getStatistic());
+        return new Statistic(storageService.getStatistic());
     }
 }

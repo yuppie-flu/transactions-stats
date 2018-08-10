@@ -26,12 +26,6 @@ class StatBucketContent {
     }
 
     Statistic toStatistic() {
-        return Statistic.builder()
-                        .count(this.count)
-                        .max(this.max)
-                        .min(this.min)
-                        .sum(this.sum)
-                        .avg(this.count == 0 ? 0.0 : this.sum / this.count)
-                        .build();
+        return new Statistic(this.count, this.min, this.max, this.sum);
     }
 }
