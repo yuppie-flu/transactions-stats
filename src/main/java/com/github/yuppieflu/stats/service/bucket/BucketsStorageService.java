@@ -56,8 +56,8 @@ public class BucketsStorageService implements StorageService {
         return buckets.stream()
                       .filter(b -> b.isWithin60SecondsFrom(requestTimestamp))
                       .map(StatBucket::content)
-                      .reduce(StatBucketContent::add)
-                      .orElse(StatBucketContent.EMPTY)
+                      .reduce(StatBucketContent.Companion::add)
+                      .orElse(StatBucketContent.Companion.getEMPTY())
                       .toStatistic();
     }
 }
