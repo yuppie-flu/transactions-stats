@@ -31,18 +31,6 @@ public class BucketsStorageServiceTest {
     }
 
     @Test
-    public void testMillSecondsOfMinute() {
-        // setup
-        long epochMillis = LocalDateTime.parse("2007-12-03T10:15:49")
-                                        .toInstant(ZoneOffset.UTC)
-                                        .plusMillis(587)
-                                        .toEpochMilli();
-
-        // expect
-        assertThat(BucketsStorageService.milliSecondOfMinute(epochMillis)).isEqualTo(49587);
-    }
-
-    @Test
     public void invalidStatusForFutureTransaction() {
         // setup
         Measurement m = measurement(FIXED_TS.plusMillis(1), VALUE);
