@@ -10,5 +10,3 @@ class Statistic(
 ) : Stat {
     constructor(stat: Stat) : this(count = stat.count, min = stat.min, max = stat.max, sum = stat.sum)
 }
-
-
