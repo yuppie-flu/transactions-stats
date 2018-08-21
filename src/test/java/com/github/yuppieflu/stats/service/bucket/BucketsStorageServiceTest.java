@@ -91,7 +91,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
+        StatAssert.Companion.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class BucketsStorageServiceTest {
         Statistic statistic = storageService.getStatistic();
 
         // then
-        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
+        StatAssert.Companion.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     private Measurement getRandMeasurement() {

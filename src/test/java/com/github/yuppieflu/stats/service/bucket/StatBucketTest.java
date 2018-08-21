@@ -49,7 +49,7 @@ public class StatBucketTest {
         Statistic statistic = bucket.content().toStatistic();
 
         // then
-        StatAssert.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
+        StatAssert.Companion.assertThat(statistic).isCloseTo(expectedStats, offset(0.01));
     }
 
     private void addMeasurementWithLatch(Measurement m, CountDownLatch latch) {

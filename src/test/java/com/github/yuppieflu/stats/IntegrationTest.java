@@ -48,7 +48,7 @@ public class IntegrationTest {
         Statistic stat = testRestTemplate.getForObject("/statistics", Statistic.class);
 
         // then
-        StatAssert.assertThat(stat).isCloseTo(expectedStat, offset(0.01));
+        StatAssert.Companion.assertThat(stat).isCloseTo(expectedStat, offset(0.01));
     }
 
     private void postTransactionWithDelay(Transaction transaction) {
